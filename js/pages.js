@@ -870,10 +870,7 @@
       App.toast('Dados atualizados', 'success');
     });
     const logout = document.getElementById('btn-logout');
-    if (logout) logout.addEventListener('click', async () => {
-      await App.api.signOut();
-      App.navigate('#/');
-    });
+    if (logout) logout.addEventListener('click', () => { App.doLogout(); });
     document.querySelectorAll('.addr-del').forEach((b) => b.addEventListener('click', async () => {
       await App.api.deleteAddress(b.getAttribute('data-id'));
       App.navigate('#/conta/enderecos');
