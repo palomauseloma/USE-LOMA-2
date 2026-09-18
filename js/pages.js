@@ -38,6 +38,7 @@
           '<a class="icon-btn cart-btn" href="#/carrinho" aria-label="Carrinho">' + App.icon('bag') + '<span class="badge" id="cart-badge">' + App.cart.count() + '</span></a>' +
           '<a class="account-link" href="' + accountHref + '">' + accountLabel + '</a>' +
           (user && user.isAdmin ? '<a class="account-link admin-link" href="#/admin">Admin</a>' : '') +
+          (user ? '<button class="logout-btn" id="btn-header-logout">Sair</button>' : '') +
         '</div>' +
       '</div>' +
       '<div class="mobile-nav" id="mobile-nav">' +
@@ -48,6 +49,7 @@
         navItem('#/carrinho', 'Meu Carrinho') +
         navItem(accountHref, accountLabel) +
         (user && user.isAdmin ? navItem('#/admin', 'Painel Admin') : '') +
+        (user ? '<a class="nav-link" href="javascript:void(0)" id="btn-mobile-logout">Sair</a>' : '') +
       '</div>';
 
     const toggle = header.querySelector('#menu-toggle');
@@ -55,6 +57,17 @@
       document.getElementById('mobile-nav').classList.toggle('open');
       toggle.classList.toggle('open');
     });
+
+    header.querySelectorAll('#btn-header-logout, #btn-mobile-logout').forEach(function (b) {
+      b.addEventListener('click', function () { App.doLogout(); });
+    });
+  };
+
+  App.doLogout = async function () {
+    await App.api.signOut();
+    App.state.user = null;
+    App.emit('auth');
+    App.navigate('#/');
   };
 
   App.renderFooter = function (s) {

@@ -60,6 +60,8 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 600; line-height: 
 }
 .account-link { font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; }
 .account-link.admin-link { color: var(--primary); font-weight: 600; }
+.logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 0.78rem; letter-spacing: 1px; text-transform: uppercase; padding: 5px 14px; border-radius: 999px; transition: .2s; }
+.logout-btn:hover { border-color: var(--danger); color: var(--danger); }
 .menu-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 4px; }
 .menu-toggle span { width: 24px; height: 2px; background: var(--text); display: block; transition: .2s; }
 .mobile-nav { display: none; flex-direction: column; padding: 8px 24px 20px; gap: 4px; border-top: 1px solid var(--border); }
