@@ -711,6 +711,9 @@
       if (!isNaN(i) && quotes[i]) App.updateShippingTotal(quotes[i]);
     });
 
+    const addrZip = document.querySelector('#addr-form input[name="zip"]');
+    if (addrZip && cepInput) addrZip.addEventListener('input', function () { cepInput.value = addrZip.value; });
+
     if (cepInput && /^\d{8}$/.test((cepInput.value || '').replace(/\D/g, ''))) calcFrete();
 
     const btn = document.getElementById('btn-place-order');
