@@ -284,6 +284,27 @@
     return (data && data.quotes) || [];
   };
 
+  App.api.generateLabel = async function (order) {
+    const { data, error } = await App.sb.functions.invoke('etiqueta', { body: { order: order } });
+    if (error) {
+      let msg = (error && error.message) || 'Erro ao gerar etiqueta';
+      if (error && error.context) {
+        try {
+          const c = typeof error.context === 'string' ? JSON.parse(error.context) : error.context;
+          if (c && c.error) msg = c.error;
+        } catch (e) {}
+      }
+      throw new Error(msg);
+    }
+    return data;
+  };
+
+  App.api.saveOrderLabel = async function (id, updates) {
+    const { data, error } = await App.sb.from('orders').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  };
+
   App.api.listAddresses = async function (userId) {
     const { data, error } = await App.sb.from('addresses').select('*').eq('user_id', userId).order('created_at');
     if (error) throw error;
