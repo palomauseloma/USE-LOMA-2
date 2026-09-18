@@ -40,7 +40,10 @@
     const { data, error } = await App.sb.auth.signUp({
       email: email,
       password: password,
-      options: { data: { full_name: full_name, phone: phone } }
+      options: {
+        data: { full_name: full_name, phone: phone },
+        emailRedirectTo: location.origin + '/'
+      }
     });
     if (error) throw error;
     return data;
@@ -48,6 +51,30 @@
 
   App.api.signIn = async function (email, password) {
     const { data, error } = await App.sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
+  };
+
+  App.api.resetPassword = async function (email) {
+    const { data, error } = await App.sb.auth.resetPasswordForEmail(email, {
+      redirectTo: location.origin + '/'
+    });
+    if (error) throw error;
+    return data;
+  };
+
+  App.api.updatePassword = async function (password) {
+    const { data, error } = await App.sb.auth.updateUser({ password: password });
+    if (error) throw error;
+    return data;
+  };
+
+  App.api.resendConfirmation = async function (email) {
+    const { data, error } = await App.sb.auth.resend({
+      type: 'signup',
+      email: email,
+      options: { emailRedirectTo: location.origin + '/' }
+    });
     if (error) throw error;
     return data;
   };

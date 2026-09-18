@@ -70,6 +70,9 @@
         return App.pages.checkout();
       case 'login': return App.pages.auth('login', { next: route.next });
       case 'cadastro': return App.pages.auth('signup', { next: route.next });
+      case 'confirmacao': return App.pages.confirmacao();
+      case 'recuperar-senha': return App.pages.recuperarSenha();
+      case 'redefinir-senha': return App.pages.redefinirSenha();
       case 'conta':
         if (!App.state.user) return App.pages.auth('login', { next: '#/conta' });
         return App.pages.account(p[1]);
@@ -92,6 +95,9 @@
         break;
       case 'login': App.bindAuth('login'); break;
       case 'cadastro': App.bindAuth('signup'); break;
+      case 'confirmacao': App.bindConfirmacao(); break;
+      case 'recuperar-senha': App.bindRecuperarSenha(); break;
+      case 'redefinir-senha': App.bindRedefinirSenha(); break;
       case 'conta':
         if (!App.state.user) App.bindAuth('login');
         else App.bindAccount();
