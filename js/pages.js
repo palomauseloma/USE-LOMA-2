@@ -732,7 +732,7 @@
         address = list.find((a) => a.id === addrId);
       } else {
         address = {
-          recipient: getVal('recipient'), phone: getVal('phone'), zip: getVal('zip'),
+          recipient: getVal('recipient'), phone: getVal('phone'), zip: getVal('zip'), document: getVal('document'),
           street: getVal('street'), number: getVal('number'), complement: getVal('complement'),
           neighborhood: getVal('neighborhood'), city: getVal('city'), state: getVal('state')
         };
@@ -741,6 +741,7 @@
           return;
         }
         if (!App.validatePhone(address.phone)) { App.toast('Telefone inválido', 'error'); return; }
+        if (address.document && !App.validateCpf(address.document)) { App.toast('CPF inválido', 'error'); return; }
         address.user_id = App.state.user.id;
         address = await App.api.saveAddress(address);
       }
