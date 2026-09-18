@@ -766,6 +766,9 @@
         if (isLogin) {
           await App.api.signIn(email, pass);
           App.toast('Bem-vinda(o)!', 'success');
+          await App.refreshAuth();
+          const next = App.authNext || App.parseRoute(location.hash).next || '#/conta';
+          App.navigate(next ? decodeURIComponent(next) : '#/conta');
         } else {
           const name = document.getElementById('au-name').value.trim();
           const phone = document.getElementById('au-phone').value.trim();
@@ -774,11 +777,10 @@
           if (pass.length < 6) { App.toast('A senha deve ter pelo menos 6 caracteres', 'error'); return; }
           if (pass !== pass2) { App.toast('As senhas não conferem', 'error'); return; }
           await App.api.signUp(name, email, phone, pass);
-          App.toast('Conta criada! Verifique seu e-mail se necessário.', 'success');
+          App.toast('Conta criada! Confirme seu e-mail para ativar.', 'success');
+          App.navigate('#/confirmacao');
+          return;
         }
-        await App.refreshAuth();
-        const next = App.authNext || App.parseRoute(location.hash).next || '#/conta';
-        App.navigate(next ? decodeURIComponent(next) : '#/conta');
       } catch (e) {
         App.toast(App.errMsg(e), 'error');
       } finally {
