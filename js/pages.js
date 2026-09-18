@@ -801,6 +801,9 @@
     msg += 'Produtos:\n' + items + '\n\n';
     msg += 'Subtotal: ' + App.money(order.subtotal) + '\n';
     msg += 'Desconto: - ' + App.money(order.discount) + '\n';
+    if (order.shipping_service || parseFloat(order.shipping_price) > 0) {
+      msg += 'Frete: ' + (order.shipping_service || '—') + ' - ' + App.money(order.shipping_price) + '\n';
+    }
     msg += 'Total: ' + App.money(order.total) + '\n\n';
     msg += 'Tipo: ' + (order.type === 'group' ? 'Compra em grupo' : 'Compra normal') + '\n';
     if (order.type === 'group' && order.group_purchases) {
