@@ -490,6 +490,13 @@
       '<div class="sum-row"><span>' + App.esc(i.name) + ' (' + App.esc(i.size || '—') + '/' + App.esc(i.color || '—') + ') ×' + i.quantity + '</span><span>' + App.money(parseFloat(i.unit_price) * i.quantity) + '</span></div>').join('');
     const grp = o.group_purchases ? '<p class="muted">Grupo: ' + (App.GROUP_STATUS[o.group_purchases.status] || o.group_purchases.status) + ' (' + o.group_purchases.current_qty + '/' + o.group_purchases.min_qty + ')</p>' : '';
     const wa = App.whatsLink(o.phone, App.buildOrderMessage(o));
+    const labelZone = o.label_url
+      ? '<a class="btn btn-primary" href="' + App.esc(o.label_url) + '" target="_blank" rel="noopener">Ver etiqueta (PDF)</a>' +
+        (o.tracking_code ? '<p class="muted mt">Rastreio: <strong>' + App.esc(o.tracking_code) + '</strong></p>' : '')
+      : (o.shipping_service_id
+          ? '<button class="btn btn-primary" id="gen-label" data-id="' + o.id + '">Gerar etiqueta</button>' +
+            (o.recipient_document ? '' : '<p class="muted mt">Atenção: este pedido não tem CPF do destinatário. A etiqueta pode falhar.</p>')
+          : '<p class="muted">Sem frete selecionado neste pedido.</p>');
     const m = App.modal(
       '<div class="modal-body"><h2>' + App.esc(o.order_number) + '</h2>' +
       '<span class="or-status status-' + App.esc(o.status) + '">' + (App.ORDER_STATUS[o.status] || o.status) + '</span>' + grp +
@@ -498,8 +505,10 @@
       '<h3>Produtos</h3><div class="checkout-summary">' + items +
         '<div class="sum-row"><span>Subtotal</span><span>' + App.money(o.subtotal) + '</span></div>' +
         (parseFloat(o.discount) > 0 ? '<div class="sum-row discount"><span>Desconto</span><span>− ' + App.money(o.discount) + '</span></div>' : '') +
+        (o.shipping_service ? '<div class="sum-row"><span>Frete (' + App.esc(o.shipping_service) + ')</span><span>' + App.money(o.shipping_price) + '</span></div>' : '') +
         '<div class="sum-row total"><span>Total</span><span>' + App.money(o.total) + '</span></div>' +
       '</div>' +
+      '<h3>Etiqueta</h3><div id="label-zone">' + labelZone + '</div>' +
       '<div class="modal-actions">' +
         '<a class="btn btn-whats" href="' + wa + '" target="_blank" rel="noopener">' + App.icon('whats') + ' WhatsApp</a>' +
         (o.status !== 'cancelled' ? '<button class="btn btn-danger" id="cancel-order" data-id="' + o.id + '">Cancelar pedido</button>' : '') +
@@ -512,6 +521,25 @@
         m.close();
         App.navigate(location.hash);
       });
+    });
+    const gen = m.el.querySelector('#gen-label');
+    if (gen) gen.addEventListener('click', async () => {
+      gen.disabled = true;
+      gen.textContent = 'Gerando…';
+      App.loading(true);
+      try {
+        const res = await App.api.generateLabel(o);
+        await App.api.saveOrderLabel(o.id, { label_url: res.label_url || '', tracking_code: res.tracking_code || '' });
+        App.toast('Etiqueta gerada com sucesso!', 'success');
+        m.close();
+        App.navigate(location.hash);
+      } catch (e) {
+        App.toast(App.errMsg(e), 'error');
+        gen.disabled = false;
+        gen.textContent = 'Gerar etiqueta';
+      } finally {
+        App.loading(false);
+      }
     });
   };
 
