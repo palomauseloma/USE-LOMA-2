@@ -432,6 +432,10 @@
         group: false,
         price: price,
         group_price: p.group_price != null ? parseFloat(p.group_price) : null,
+        weight: p.weight != null ? parseFloat(p.weight) : 0.5,
+        width: p.width != null ? parseFloat(p.width) : 16,
+        height: p.height != null ? parseFloat(p.height) : 16,
+        length: p.length != null ? parseFloat(p.length) : 16,
         image: img
       });
       App.toast('Produto adicionado ao carrinho', 'success');
