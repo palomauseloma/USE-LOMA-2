@@ -748,6 +748,8 @@
       (!isLogin ? '<input class="input" id="au-pass2" type="password" placeholder="Confirmação de senha">' : '') +
       (isLogin ? '<a class="auth-forgot" href="#/recuperar-senha">Esqueci minha senha?</a>' : '') +
       '<button class="btn btn-primary btn-block" id="au-submit">' + (isLogin ? 'Entrar' : 'Cadastrar e continuar') + '</button>' +
+      (isLogin ? '<div class="auth-divider"><span>ou continue com</span></div>' +
+        '<button class="btn btn-google btn-block" id="au-google">' + App.icon('google') + ' Entrar com Google</button>' : '') +
       '<p class="auth-alt">' + (isLogin ? 'Não tem conta? <a href="#/cadastro">Cadastre-se</a>' : 'Já tem conta? <a href="#/login">Entrar</a>') + '</p>' +
       '</div></section>';
   };
