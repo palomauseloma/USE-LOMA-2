@@ -55,6 +55,15 @@
     return data;
   };
 
+  App.api.signInGoogle = async function () {
+    const { data, error } = await App.sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: location.origin + '/' }
+    });
+    if (error) throw error;
+    return data;
+  };
+
   App.api.resetPassword = async function (email) {
     const { data, error } = await App.sb.auth.resetPasswordForEmail(email, {
       redirectTo: location.origin + '/'
