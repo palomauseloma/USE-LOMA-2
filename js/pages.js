@@ -757,6 +757,16 @@
   App.bindAuth = function (mode) {
     const isLogin = mode === 'login';
     const btn = document.getElementById('au-submit');
+    const googleBtn = document.getElementById('au-google');
+    if (googleBtn) googleBtn.addEventListener('click', async function () {
+      App.loading(true);
+      try {
+        await App.api.signInGoogle();
+      } catch (e) {
+        App.loading(false);
+        App.toast(App.errMsg(e), 'error');
+      }
+    });
     if (!btn) return;
     btn.addEventListener('click', async function () {
       const email = document.getElementById('au-email').value.trim();
