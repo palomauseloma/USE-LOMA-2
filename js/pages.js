@@ -368,7 +368,7 @@
   App.simulateGroupClosed = function (p, group, phone) {
     const box = document.getElementById('group-notify');
     if (!box) return;
-    const link = 'https://useloma.com.br/pagamento/' + group.id;
+    const link = location.origin + '/pagamento/' + group.id;
     const now = new Date();
     const ts = now.toLocaleTimeString('pt-BR');
     const phoneDisplay = phone ? App.formatPhone(phone) : 'os participantes';
