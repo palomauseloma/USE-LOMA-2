@@ -605,6 +605,8 @@
     const profile = App.state.user.profile || {};
     const addresses = await App.api.listAddresses(App.state.user.id);
     const expected = await App.cart.expected();
+    App._checkoutBaseTotal = expected.total;
+    const cep = addresses.length ? (addresses[0].zip || '') : '';
 
     const addrOpts = addresses.length
       ? '<div class="addr-list" id="addr-list">' + addresses.map((a) =>
@@ -622,10 +624,19 @@
         '<div class="checkout-main">' +
           '<h3>Endereço de entrega</h3>' + addrOpts +
           '<h3 class="mt">Novo endereço</h3>' + App.addressForm({}) +
+          '<h3 class="mt">Frete</h3>' +
+          '<div class="shipping-zone">' +
+            '<div class="form-inline">' +
+              '<input class="input" id="ship-cep" placeholder="CEP de entrega" value="' + App.esc(cep) + '">' +
+              '<button class="btn btn-outline" id="btn-calc-frete">Calcular frete</button>' +
+            '</div>' +
+            '<div class="shipping-options" id="shipping-options"></div>' +
+          '</div>' +
           '<h3 class="mt">Resumo do pedido</h3><div class="checkout-summary">' + rows +
             '<div class="sum-row"><span>Subtotal</span><span>' + App.money(expected.subtotal) + '</span></div>' +
             (expected.discount > 0 ? '<div class="sum-row discount"><span>Desconto</span><span>− ' + App.money(expected.discount) + '</span></div>' : '') +
-            '<div class="sum-row total"><span>Total</span><span>' + App.money(expected.total) + '</span></div>' +
+            '<div class="sum-row" id="ship-row" style="display:none"><span>Frete</span><span id="ship-value"></span></div>' +
+            '<div class="sum-row total"><span>Total</span><span id="total-value">' + App.money(expected.total) + '</span></div>' +
           '</div>' +
           '<button class="btn btn-primary btn-block" id="btn-place-order">Confirmar pedido</button>' +
         '</div>' +
