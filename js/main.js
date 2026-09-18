@@ -13,7 +13,7 @@
     if (App.authFlow.type === 'signup' && App.state.user) {
       App.authFlow.type = null;
       App.navigate('#/confirmacao');
-    } else if (App.authFlow.type === 'recovery') {
+    } else if (App.authFlow.type === 'recovery' && App.state.user) {
       App.authFlow.type = null;
       App.navigate('#/redefinir-senha');
     }

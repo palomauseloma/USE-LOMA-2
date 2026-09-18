@@ -11,22 +11,22 @@
 
   App.api = {};
 
-  App.api.onAuth = function () {
-    App.sb.auth.onAuthStateChange((event, session) => {
+  App.api.onAuth = function (cb) {
+    App.sb.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN') {
-        App.emit('auth', session);
+        if (cb) await cb(session);
         if (App.authFlow.type === 'signup') {
           App.authFlow.type = null;
           App.navigate('#/confirmacao');
         }
       } else if (event === 'PASSWORD_RECOVERY') {
-        App.emit('auth', session);
+        if (cb) await cb(session);
         App.authFlow.type = null;
         App.navigate('#/redefinir-senha');
       } else if (event === 'SIGNED_OUT') {
-        App.emit('auth', null);
+        if (cb) await cb(null);
       } else if (event === 'USER_UPDATED') {
-        App.emit('auth', session);
+        if (cb) await cb(session);
       }
     });
   };
