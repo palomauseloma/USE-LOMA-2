@@ -1,6 +1,6 @@
 .opencode
 .vscode
-server.js
+dev-server.js
 emails
 opencode.json
 .gitignore
