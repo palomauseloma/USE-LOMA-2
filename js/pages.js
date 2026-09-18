@@ -750,7 +750,7 @@
       let shipping = {};
       if (selectedShip && quotes[parseInt(selectedShip.value, 10)]) {
         const q = quotes[parseInt(selectedShip.value, 10)];
-        shipping = { name: q.name, price: parseFloat(q.price) || 0 };
+        shipping = { name: q.name, price: parseFloat(q.price) || 0, id: String(q.id || '') };
       }
 
       const cart = App.cart.load().map((i) => ({
@@ -1082,7 +1082,7 @@
     if (addAddr) addAddr.addEventListener('click', async () => {
       const form = document.getElementById('addr-form');
       const g = (n) => form.querySelector('[name="' + n + '"]').value.trim();
-      const addr = { user_id: App.state.user.id, recipient: g('recipient'), phone: g('phone'), zip: g('zip'), street: g('street'), number: g('number'), complement: g('complement'), neighborhood: g('neighborhood'), city: g('city'), state: g('state') };
+      const addr = { user_id: App.state.user.id, recipient: g('recipient'), phone: g('phone'), zip: g('zip'), document: g('document'), street: g('street'), number: g('number'), complement: g('complement'), neighborhood: g('neighborhood'), city: g('city'), state: g('state') };
       if (!addr.recipient || !addr.street || !addr.city) { App.toast('Preencha os campos obrigatórios', 'error'); return; }
       await App.api.saveAddress(addr);
       App.navigate('#/conta/enderecos');
