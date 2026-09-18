@@ -658,7 +658,61 @@
       '</div>';
   };
 
+  App.updateShippingTotal = function (quote) {
+    const row = document.getElementById('ship-row');
+    const val = document.getElementById('ship-value');
+    const total = document.getElementById('total-value');
+    if (!row || !val || !total) return;
+    const price = quote ? (parseFloat(quote.price) || 0) : 0;
+    row.style.display = price > 0 ? 'flex' : 'none';
+    val.textContent = App.money(price);
+    total.textContent = App.money((App._checkoutBaseTotal || 0) + price);
+  };
+
   App.bindCheckout = function () {
+    const optionsBox = document.getElementById('shipping-options');
+    const cepInput = document.getElementById('ship-cep');
+    const calcBtn = document.getElementById('btn-calc-frete');
+    let quotes = [];
+
+    async function calcFrete() {
+      const cep = (cepInput ? cepInput.value : '').replace(/\D/g, '');
+      if (!/^\d{8}$/.test(cep)) { App.toast('Informe um CEP válido (8 dígitos)', 'error'); return; }
+      const items = App.cart.load();
+      if (!items.length) return;
+      if (optionsBox) optionsBox.innerHTML = '<p class="muted">Calculando frete…</p>';
+      App.loading(true);
+      try {
+        quotes = await App.api.calculateShipping(cep, items);
+        if (!quotes.length) {
+          if (optionsBox) optionsBox.innerHTML = '<p class="muted">Nenhuma opção de frete disponível para este CEP.</p>';
+          return;
+        }
+        if (optionsBox) optionsBox.innerHTML = quotes.map((q, i) => {
+          const price = parseFloat(q.price) || 0;
+          const days = q.delivery_time != null ? q.delivery_time : (q.delivery_range && q.delivery_range.max);
+          const company = (q.company && q.company.name) || '';
+          return '<label class="ship-opt"><input type="radio" name="ship" value="' + i + '"' + (i === 0 ? ' checked' : '') + '>' +
+            '<span>' + App.esc(q.name) + (company ? ' <small>· ' + App.esc(company) + '</small>' : '') + '</span>' +
+            (days != null ? '<span class="ship-days">até ' + days + ' dias</span>' : '') +
+            '<span class="ship-price">' + App.money(price) + '</span></label>';
+        }).join('');
+        App.updateShippingTotal(quotes[0]);
+      } catch (e) {
+        if (optionsBox) optionsBox.innerHTML = '<p class="muted">' + App.esc(App.errMsg(e)) + '</p>';
+      } finally {
+        App.loading(false);
+      }
+    }
+
+    if (calcBtn) calcBtn.addEventListener('click', calcFrete);
+    if (optionsBox) optionsBox.addEventListener('change', function (e) {
+      const i = parseInt(e.target.value, 10);
+      if (!isNaN(i) && quotes[i]) App.updateShippingTotal(quotes[i]);
+    });
+
+    if (cepInput && /^\d{8}$/.test((cepInput.value || '').replace(/\D/g, ''))) calcFrete();
+
     const btn = document.getElementById('btn-place-order');
     if (!btn) return;
     btn.addEventListener('click', async function () {
@@ -687,13 +741,20 @@
         address = await App.api.saveAddress(address);
       }
 
+      const selectedShip = document.querySelector('input[name="ship"]:checked');
+      let shipping = {};
+      if (selectedShip && quotes[parseInt(selectedShip.value, 10)]) {
+        const q = quotes[parseInt(selectedShip.value, 10)];
+        shipping = { name: q.name, price: parseFloat(q.price) || 0 };
+      }
+
       const cart = App.cart.load().map((i) => ({
         product_id: i.product_id, size: i.size, color: i.color, quantity: i.quantity, group: !!i.group
       }));
 
       App.loading(true);
       try {
-        const order = await App.api.createOrder(cart, address);
+        const order = await App.api.createOrder(cart, address, shipping);
         App.cart.clear();
         const full = await App.api.getOrder(order.order_id);
         App.showOrderSuccess(full);
