@@ -26,7 +26,7 @@
     App.on('cart', updateCartBadge);
     App.on('auth', function () { App.renderHeader(App.STORE.settings); });
 
-    App.api.onAuth(function () { App.refreshAuth(); });
+    App.api.onAuth(function () { return App.refreshAuth(); });
 
     await App.render();
   }
