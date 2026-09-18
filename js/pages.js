@@ -284,16 +284,11 @@
 
       const groupCard = p.group_enabled ? App.groupCard(p) : '';
 
-      const videosHtml = videos.length
-        ? '<div class="videos-row">' + videos.map((v) =>
-            '<video controls preload="metadata" src="' + App.esc(v.url) + '"></video>').join('') + '</div>'
-        : '';
-
       const html =
         '<div class="product-detail">' +
           '<div class="pd-gallery">' +
-            '<div class="pd-main"><img id="pd-main-img" src="' + App.img(mainImg) + '" alt="' + App.esc(p.name) + '"></div>' +
-            (images.length > 1 ? '<div class="pd-thumbs">' + gallery + '</div>' : '') +
+            '<div class="pd-main" id="pd-main">' + mainMedia + '</div>' +
+            galleryThumbs +
           '</div>' +
           '<div class="pd-info">' +
             '<div class="pd-badges">' +
@@ -313,7 +308,6 @@
               '<button class="btn btn-primary" id="btn-add-cart">' + App.icon('bag') + ' Adicionar ao carrinho</button>' +
             '</div>' +
             '<div id="group-zone">' + groupCard + '</div>' +
-            videosHtml +
           '</div>' +
         '</div>';
 
@@ -410,12 +404,19 @@
     App.toast('Meta atingida! Link de pagamento disparado para os participantes.', 'success');
   };
 
+  App.renderMedia = function (container, type, url, alt) {
+    if (!container) return;
+    container.innerHTML = type === 'video'
+      ? '<video controls preload="metadata" src="' + App.esc(url) + '"></video>'
+      : '<img src="' + App.img(url) + '" alt="' + App.esc(alt || '') + '">';
+  };
+
   App.bindProduct = function (params) {
-    const imgs = document.querySelectorAll('.pd-thumbs .thumb');
-    imgs.forEach((t) => t.addEventListener('click', function () {
-      const main = document.getElementById('pd-main-img');
-      if (main && t.querySelector('img')) main.src = t.querySelector('img').src;
-      imgs.forEach((x) => x.classList.remove('active'));
+    const main = document.getElementById('pd-main');
+    const thumbs = document.querySelectorAll('.pd-thumbs .thumb');
+    thumbs.forEach((t) => t.addEventListener('click', function () {
+      App.renderMedia(main, t.getAttribute('data-type'), t.getAttribute('data-src'), t.getAttribute('data-alt'));
+      thumbs.forEach((x) => x.classList.remove('active'));
       t.classList.add('active');
     }));
 
