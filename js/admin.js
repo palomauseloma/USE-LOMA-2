@@ -254,6 +254,10 @@
         '<label class="field"><span>Novo</span><select class="input" id="f-new"><option value="0">Não</option><option value="1"' + (v('is_new', false) ? ' selected' : '') + '>Sim</option></select></label>' +
         '<label class="field"><span>Compra em grupo</span><select class="input" id="f-group"><option value="0">Não</option><option value="1"' + (v('group_enabled', false) ? ' selected' : '') + '>Sim</option></select></label>' +
         '<label class="field"><span>Qtde mínima grupo</span><input class="input" id="f-min" type="number" value="' + v('group_min_qty', 5) + '"></label>' +
+        '<label class="field"><span>Peso (kg)</span><input class="input" id="f-weight" type="number" step="0.01" value="' + v('weight', 0.5) + '"></label>' +
+        '<label class="field"><span>Largura (cm)</span><input class="input" id="f-width" type="number" step="0.1" value="' + v('width', 16) + '"></label>' +
+        '<label class="field"><span>Altura (cm)</span><input class="input" id="f-height" type="number" step="0.1" value="' + v('height', 16) + '"></label>' +
+        '<label class="field"><span>Comprimento (cm)</span><input class="input" id="f-length" type="number" step="0.1" value="' + v('length', 16) + '"></label>' +
       '</div>' +
       '<div class="admin-actions"><button class="btn btn-primary" id="btn-save-product">Salvar produto</button>' +
       (id ? '<a class="btn btn-outline" href="#/admin/produtos">Voltar</a>' : '') + '</div>';
@@ -303,7 +307,11 @@
         description: document.getElementById('f-desc').value,
         sizes: csv(g('f-sizes')), colors: csv(g('f-colors')),
         is_active: g('f-active') === '1', is_featured: g('f-featured') === '1', is_new: g('f-new') === '1',
-        group_enabled: g('f-group') === '1', group_min_qty: parseInt(g('f-min')) || 5
+        group_enabled: g('f-group') === '1', group_min_qty: parseInt(g('f-min')) || 5,
+        weight: parseFloat(g('f-weight')) || 0.5,
+        width: parseFloat(g('f-width')) || 16,
+        height: parseFloat(g('f-height')) || 16,
+        length: parseFloat(g('f-length')) || 16
       };
       if (!payload.name) { App.toast('Informe o nome do produto', 'error'); return; }
       if (id) payload.id = id;
