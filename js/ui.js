@@ -127,6 +127,29 @@
     return /\d{10,13}$/.test(String(p || '').replace(/\D/g, ''));
   };
 
+  App.validateCpf = function (cpf) {
+    const c = String(cpf || '').replace(/\D/g, '');
+    if (c.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(c)) return false;
+    let sum = 0, rev, i;
+    for (i = 0; i < 9; i++) sum += parseInt(c.charAt(i), 10) * (10 - i);
+    rev = 11 - (sum % 11);
+    if (rev === 10 || rev === 11) rev = 0;
+    if (rev !== parseInt(c.charAt(9), 10)) return false;
+    sum = 0;
+    for (i = 0; i < 10; i++) sum += parseInt(c.charAt(i), 10) * (11 - i);
+    rev = 11 - (sum % 11);
+    if (rev === 10 || rev === 11) rev = 0;
+    if (rev !== parseInt(c.charAt(10), 10)) return false;
+    return true;
+  };
+
+  App.formatCpf = function (cpf) {
+    const c = String(cpf || '').replace(/\D/g, '');
+    if (c.length !== 11) return cpf || '';
+    return c.slice(0, 3) + '.' + c.slice(3, 6) + '.' + c.slice(6, 9) + '-' + c.slice(9);
+  };
+
   App.icon = function (name) {
     const icons = {
       bag: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7h12l1 14H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
