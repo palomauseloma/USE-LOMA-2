@@ -241,6 +241,10 @@ h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 600; line-height: 
 .auth-alt a { color: var(--primary); }
 .auth-forgot { text-align: right; font-size: 0.8rem; color: var(--primary); margin-top: -6px; }
 .auth-forgot:hover { text-decoration: underline; }
+.auth-divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.btn-google { background: #fff; color: var(--text); border: 1px solid var(--border); }
+.btn-google:hover { background: var(--bg-soft); }
 .auth-card.center { text-align: center; }
 .auth-card.center .success-icon { width: 64px; height: 64px; font-size: 1.8rem; margin: 0 auto 20px; }
 

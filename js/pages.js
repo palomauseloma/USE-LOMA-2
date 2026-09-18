@@ -534,6 +534,7 @@
     if (m.includes('Invalid login credentials')) return 'E-mail ou senha inválidos.';
     if (m.includes('Password should be at least')) return 'A senha deve ter pelo menos 6 caracteres.';
     if (m.includes('Email not confirmed')) return 'Confirme seu e-mail antes de entrar.';
+    if (m.includes('provider is not enabled') || m.includes('Unsupported provider') || m.includes('Provider not enabled')) return 'O login com Google ainda não está habilitado. Entre em contato com o administrador.';
     if (m.includes('duplicate key') || m.includes('23505')) return 'Registro duplicado.';
     return m;
   };
