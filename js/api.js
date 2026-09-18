@@ -1,15 +1,33 @@
 (function () {
+  App.authFlow = { type: null };
+  try {
+    const m = (window.location.hash || '').match(/[?&#]type=(signup|recovery|invite|email|magiclink|email_change)/);
+    if (m) App.authFlow.type = m[1];
+  } catch (e) {}
+
   App.sb = supabase.createClient(App.cfg.supabaseUrl, App.cfg.supabaseAnonKey, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
 
   App.api = {};
 
-  App.api.onAuth = function (cb) {
+  App.api.onAuth = function () {
     App.sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') App.emit('auth', session);
-      else if (event === 'SIGNED_OUT') App.emit('auth', null);
-      else if (event === 'USER_UPDATED') App.emit('auth', session);
+      if (event === 'SIGNED_IN') {
+        App.emit('auth', session);
+        if (App.authFlow.type === 'signup') {
+          App.authFlow.type = null;
+          App.navigate('#/confirmacao');
+        }
+      } else if (event === 'PASSWORD_RECOVERY') {
+        App.emit('auth', session);
+        App.authFlow.type = null;
+        App.navigate('#/redefinir-senha');
+      } else if (event === 'SIGNED_OUT') {
+        App.emit('auth', null);
+      } else if (event === 'USER_UPDATED') {
+        App.emit('auth', session);
+      }
     });
   };
 
