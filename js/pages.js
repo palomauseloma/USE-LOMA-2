@@ -257,10 +257,23 @@
       });
       const videos = (p.product_videos || []).slice().sort((a, b) => a.sort_order - b.sort_order);
 
-      const gallery = images.map((im, i) =>
-        '<div class="thumb' + (i === 0 ? ' active' : '') + '" data-i="' + i + '"><img src="' + App.img(im.url) + '" alt=""></div>'
-      ).join('');
-      const mainImg = images.length ? images[0].url : null;
+      const mediaItems = images.map((im) => ({ type: 'image', url: im.url }))
+        .concat(videos.map((v) => ({ type: 'video', url: v.url })));
+
+      const galleryThumbs = mediaItems.length > 1
+        ? '<div class="pd-thumbs">' + mediaItems.map((m, i) => {
+            const inner = m.type === 'video'
+              ? '<span class="thumb-play">' + App.icon('play') + '</span>'
+              : '<img src="' + App.img(m.url) + '" alt="">';
+            return '<div class="thumb' + (i === 0 ? ' active' : '') + ' is-' + m.type + '" data-type="' + m.type + '" data-src="' + App.esc(m.url) + '"' + (m.type === 'image' ? ' data-alt="' + App.esc(p.name) + '"' : '') + '>' + inner + '</div>';
+          }).join('') + '</div>'
+        : '';
+
+      const mainMedia = mediaItems.length
+        ? (mediaItems[0].type === 'video'
+            ? '<video controls preload="metadata" src="' + App.esc(mediaItems[0].url) + '"></video>'
+            : '<img src="' + App.img(mediaItems[0].url) + '" alt="' + App.esc(p.name) + '">')
+        : '';
 
       const sizes = p.sizes || [];
       const colors = p.colors || [];
