@@ -252,10 +252,36 @@
       .subscribe();
   };
 
-  App.api.createOrder = async function (cart, address) {
-    const { data, error } = await App.sb.rpc('create_order', { p_cart: cart, p_address: address });
+  App.api.createOrder = async function (cart, address, shipping) {
+    const { data, error } = await App.sb.rpc('create_order', { p_cart: cart, p_address: address, p_shipping: shipping || {} });
     if (error) throw error;
     return data;
+  };
+
+  App.api.calculateShipping = async function (toCep, items) {
+    const products = (items || []).map((it, i) => ({
+      id: String(i + 1),
+      width: it.width || 16,
+      height: it.height || 16,
+      length: it.length || 16,
+      weight: it.weight || 0.5,
+      insurance_value: parseFloat(it.price) || 0,
+      quantity: it.quantity || 1
+    }));
+    const { data, error } = await App.sb.functions.invoke('frete', {
+      body: { to: { postal_code: toCep }, products: products }
+    });
+    if (error) {
+      let msg = (error && error.message) || 'Erro ao calcular frete';
+      if (error && error.context) {
+        try {
+          const c = typeof error.context === 'string' ? JSON.parse(error.context) : error.context;
+          if (c && c.error) msg = c.error;
+        } catch (e) {}
+      }
+      throw new Error(msg);
+    }
+    return (data && data.quotes) || [];
   };
 
   App.api.listAddresses = async function (userId) {
