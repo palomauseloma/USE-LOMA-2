@@ -789,6 +789,109 @@
     });
   };
 
+  // ============ CONFIRMAÇÃO / SENHA ============
+  App.pages.confirmacao = function () {
+    const confirmed = !!App.state.user;
+    return '<section class="auth-page"><div class="auth-card center">' +
+      (confirmed
+        ? '<div class="success-icon">✓</div>' +
+          '<h1>E-mail confirmado!</h1>' +
+          '<p class="muted">Sua conta foi ativada com sucesso. Bem-vinda à USE LOMA ♡</p>' +
+          '<a class="btn btn-primary btn-block" href="#/conta">Ir para minha conta</a>' +
+          '<a class="btn btn-outline btn-block" href="#/">Voltar à loja</a>'
+        : '<h1>Confirme seu e-mail</h1>' +
+          '<p class="muted">Enviamos um link de confirmação para o seu e-mail. Clique no link para ativar sua conta.</p>' +
+          '<p class="muted small">Não recebeu? Verifique a caixa de spam ou reenvie abaixo.</p>' +
+          '<input class="input" id="cf-email" type="email" placeholder="Seu e-mail">' +
+          '<button class="btn btn-primary btn-block" id="cf-resend">Reenviar e-mail de confirmação</button>' +
+          '<a class="link" href="#/login">Já confirmou? Entrar</a>') +
+      '</div></section>';
+  };
+
+  App.bindConfirmacao = function () {
+    const resend = document.getElementById('cf-resend');
+    if (!resend) return;
+    resend.addEventListener('click', async function () {
+      const email = document.getElementById('cf-email').value.trim();
+      if (!App.validateEmail(email)) { App.toast('E-mail inválido', 'error'); return; }
+      App.loading(true);
+      try {
+        await App.api.resendConfirmation(email);
+        App.toast('E-mail de confirmação reenviado!', 'success');
+      } catch (e) {
+        App.toast(App.errMsg(e), 'error');
+      } finally {
+        App.loading(false);
+      }
+    });
+  };
+
+  App.pages.recuperarSenha = function () {
+    return '<section class="auth-page"><div class="auth-card">' +
+      '<h1>Redefinir senha</h1>' +
+      '<p class="muted">Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>' +
+      '<input class="input" id="rp-email" type="email" placeholder="E-mail">' +
+      '<button class="btn btn-primary btn-block" id="rp-submit">Enviar link de redefinição</button>' +
+      '<p class="auth-alt">Lembrou a senha? <a href="#/login">Entrar</a></p>' +
+      '</div></section>';
+  };
+
+  App.bindRecuperarSenha = function () {
+    const btn = document.getElementById('rp-submit');
+    if (!btn) return;
+    btn.addEventListener('click', async function () {
+      const email = document.getElementById('rp-email').value.trim();
+      if (!App.validateEmail(email)) { App.toast('E-mail inválido', 'error'); return; }
+      App.loading(true);
+      try {
+        await App.api.resetPassword(email);
+        App.toast('Se o e-mail existir, você receberá um link de redefinição.', 'success');
+        btn.disabled = true;
+        btn.textContent = 'E-mail enviado!';
+      } catch (e) {
+        App.toast(App.errMsg(e), 'error');
+      } finally {
+        App.loading(false);
+      }
+    });
+  };
+
+  App.pages.redefinirSenha = function () {
+    const hasSession = !!App.state.user;
+    return '<section class="auth-page"><div class="auth-card">' +
+      (hasSession
+        ? '<h1>Nova senha</h1>' +
+          '<p class="muted">Crie uma nova senha para a sua conta.</p>' +
+          '<input class="input" id="np-pass" type="password" placeholder="Nova senha">' +
+          '<input class="input" id="np-pass2" type="password" placeholder="Confirmar nova senha">' +
+          '<button class="btn btn-primary btn-block" id="np-submit">Salvar nova senha</button>'
+        : '<h1>Link inválido</h1>' +
+          '<p class="muted">Este link de redefinição não é válido ou já expirou.</p>' +
+          '<a class="btn btn-primary btn-block" href="#/recuperar-senha">Solicitar novo link</a>') +
+      '</div></section>';
+  };
+
+  App.bindRedefinirSenha = function () {
+    const btn = document.getElementById('np-submit');
+    if (!btn) return;
+    btn.addEventListener('click', async function () {
+      const pass = document.getElementById('np-pass').value;
+      const pass2 = document.getElementById('np-pass2').value;
+      if (pass.length < 6) { App.toast('A senha deve ter pelo menos 6 caracteres', 'error'); return; }
+      if (pass !== pass2) { App.toast('As senhas não conferem', 'error'); return; }
+      App.loading(true);
+      try {
+        await App.api.updatePassword(pass);
+        App.toast('Senha atualizada com sucesso!', 'success');
+        App.navigate('#/conta');
+      } catch (e) {
+        App.toast(App.errMsg(e), 'error');
+      } finally {
+        App.loading(false);
+      }
+    });
+  };
+
   // ============ ACCOUNT ============
   App.pages.account = async function (tab) {
     const user = App.state.user;

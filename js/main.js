@@ -10,6 +10,14 @@
 
     await App.refreshAuth();
 
+    if (App.authFlow.type === 'signup' && App.state.user) {
+      App.authFlow.type = null;
+      App.navigate('#/confirmacao');
+    } else if (App.authFlow.type === 'recovery') {
+      App.authFlow.type = null;
+      App.navigate('#/redefinir-senha');
+    }
+
     App.applyTheme(App.STORE.settings);
     App.renderHeader(App.STORE.settings);
     App.renderFooter(App.STORE.settings);
