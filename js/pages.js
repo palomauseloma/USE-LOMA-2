@@ -648,6 +648,7 @@
     return '<div class="form-grid addr-form" id="addr-form">' +
       '<input class="input" name="recipient" placeholder="Nome do destinatário" value="' + App.esc(a.recipient || '') + '">' +
       '<input class="input" name="phone" placeholder="Telefone/WhatsApp" value="' + App.esc(a.phone || '') + '">' +
+      '<input class="input" name="document" placeholder="CPF do destinatário" value="' + App.esc(a.document || '') + '">' +
       '<input class="input" name="zip" placeholder="CEP" value="' + App.esc(a.zip || '') + '">' +
       '<input class="input" name="street" placeholder="Rua" value="' + App.esc(a.street || '') + '">' +
       '<input class="input" name="number" placeholder="Número" value="' + App.esc(a.number || '') + '">' +
